@@ -16,6 +16,7 @@
 
 package com.google.android.accessibility.talkback;
 
+import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED;
 import static com.google.android.accessibility.talkback.Feedback.ContinuousRead.Action.START_AT_NEXT;
 import static com.google.android.accessibility.talkback.Feedback.ContinuousRead.Action.START_AT_TOP;
 import static com.google.android.accessibility.talkback.Feedback.FocusDirection.Action.NEXT_GRANULARITY;
@@ -535,6 +536,17 @@ public class TalkBackService extends AccessibilityService
     accessibilityEventProcessor.onAccessibilityEvent(event, eventId);
 
     perf.onHandlerDone(eventId);
+
+    if(event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+      Intent intent = new Intent("a11y_read_test");
+      if(event.getText().size() == 1) {
+        intent.putExtra("payload", event.getText().get(0).toString());
+        intent.putExtra("error", false);
+      } else {
+        intent.putExtra("error", true);
+      }
+      getBaseContext().sendBroadcast(intent);
+    }
   }
 
   public boolean supportsTouchScreen() {
