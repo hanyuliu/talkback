@@ -541,6 +541,7 @@ public class TalkBackService extends AccessibilityService
       Intent intent = new Intent("a11y_read_test");
       if(event.getText().size() == 1) {
         intent.putExtra("payload", event.getText().get(0).toString());
+        intent.putExtra("cd", event.getContentDescription().toString());
         intent.putExtra("error", false);
       } else {
         intent.putExtra("error", true);
