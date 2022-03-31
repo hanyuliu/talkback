@@ -52,6 +52,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.graphics.Region;
 import android.media.AudioManager;
 import android.os.Build;
@@ -536,13 +537,22 @@ public class TalkBackService extends AccessibilityService
     accessibilityEventProcessor.onAccessibilityEvent(event, eventId);
 
     perf.onHandlerDone(eventId);
+    event.getEventType();
 
+    System.out.println("==> Type: " + AccessibilityEvent.eventTypeToString(event.getEventType()));
     if(event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
       Intent intent = new Intent("a11y_read_test");
       if(event.getText().size() == 1) {
         intent.putExtra("payload", event.getText().get(0).toString());
         if (event.getContentDescription() != null) {
           intent.putExtra("cd", event.getContentDescription().toString());
+        }
+        AccessibilityNodeInfoCompat nodeInfo = FocusFinder.getAccessibilityFocusNode(this, false);
+        if (nodeInfo != null) {
+          Rect rect = new Rect();
+          nodeInfo.getBoundsInScreen(rect);
+          intent.putExtra("rect", rect);
+          intent.putExtra("id", nodeInfo.getViewIdResourceName());
         }
         intent.putExtra("error", false);
       } else {
